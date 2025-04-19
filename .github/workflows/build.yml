@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang llvm ldid fakeroot dpkg-dev
+          sudo apt install -y build-essential clang llvm ldid fakeroot dpkg-dev zip
 
       - name: Setup Theos
         run: |
@@ -32,8 +32,15 @@ jobs:
           make clean
           make package
 
+      - name: Rename .deb file for output
+        run: |
+          cd SHSHHelper/packages
+          for file in *.deb; do
+            cp "$file" "../../../SHSHHelper.deb"
+          done
+
       - name: Upload .deb package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: SHSHHelper-deb
-          path: SHSHHelper/packages/*.deb
+          path: SHSHHelper.deb
