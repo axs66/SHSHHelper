@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>PreferenceSpecifiers</key>
+    <array>
+        <!-- 显示 ECID -->
+        <dict>
+            <key>Type</key>
+            <string>PSGroupSpecifier</string>
+            <key>FooterText</key>
+            <string>ECID: 点击下面按钮复制。</string>
+        </dict>
+
+        <dict>
+            <key>Type</key>
+            <string>PSButtonSpecifier</string>
+            <key>Title</key>
+            <string>复制 ECID</string>
+            <key>Action</key>
+            <string>copyECID</string>
+        </dict>
+
+        <!-- 显示设备型号 -->
+        <dict>
+            <key>Type</key>
+            <string>PSGroupSpecifier</string>
+            <key>FooterText</key>
+            <string>型号: 点击下面按钮跳转保存 SHSH 页面。</string>
+        </dict>
+
+        <dict>
+            <key>Type</key>
+            <string>PSButtonSpecifier</string>
+            <key>Title</key>
+            <string>保存 SHSH</string>
+            <key>Action</key>
+            <string>openSHSHLink</string>
+        </dict>
+    </array>
+</dict>
+</plist>
