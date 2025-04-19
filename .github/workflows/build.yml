@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest  # 或者 macos-latest，取决于你的环境需求
 
     steps:
+      # 获取仓库代码
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -36,7 +37,7 @@ jobs:
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
 
-      # 安装 iOS Toolchain
+      # 安装基础的 iOS Toolchain（不包含完整的 SDK）
       - name: Install iOS Toolchain
         run: |
           mkdir -p ~/theos/toolchain
