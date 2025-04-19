@@ -14,63 +14,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          submodules: recursive
+          submodules: recursive  # 如果你有 submodule，确保它也会被下载
 
-      # 安装依赖
-      - name: Install dependencies
+      # 安装 Docker
+      - name: Install Docker
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl make jq
+          sudo apt install -y docker.io
 
-      # 安装 ldid
-      - name: Install ldid
+      # 拉取 Theos Docker 镜像并构建
+      - name: Build with Theos Docker
         run: |
-          curl -LO https://github.com/ProcursusTeam/ldid/releases/latest/download/ldid_linux_x86_64
-          chmod +x ldid_linux_x86_64
-          sudo mv ldid_linux_x86_64 /usr/local/bin/ldid
+          docker pull theos/theos  # 拉取 Theos 官方 Docker 镜像
+          docker run --rm -v $(pwd):/theos theos/theos make clean  # 清理旧构建
+          docker run --rm -v $(pwd):/theos theos/theos make package  # 构建插件
 
-      # 安装 Theos
-      - name: Setup Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git ~/theos
-
-      # 安装 iOS toolchain
-      - name: Install iOS Toolchain
-        run: |
-          mkdir -p ~/theos/toolchain
-          curl -LO https://github.com/theos/toolchain-linux/releases/download/latest/toolchain.tar.xz
-          tar -xf toolchain.tar.xz -C ~/theos/toolchain
-
-      # 安装 iOS SDK
-      - name: Install iOS SDK
-        run: |
-          mkdir -p ~/theos/sdks
-          curl -LO https://github.com/theos/sdks/releases/download/20240505/iPhoneOS16.4.sdk.tar.xz
-          tar -xf iPhoneOS16.4.sdk.tar.xz -C ~/theos/sdks
-
-      # 设置 Theos 环境变量
-      - name: Export THEOS path
-        run: |
-          echo "THEOS=~/theos" >> $GITHUB_ENV
-          echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
-
-      # 清理旧构建缓存
-      - name: Clean previous build artifacts
-        run: |
-          rm -rf *.deb packages/ .theos/
-
-      # 列出仓库文件，确认 Makefile 结构
-      - name: List repo files before build
-        run: |
-          find .
-
-      # 构建插件
-      - name: Build the tweak
-        run: |
-          make clean
-          make package
-
-      # 打包 .deb 为 zip
+      # 打包 .deb 包为 ZIP
       - name: Zip deb output
         run: |
           zip -r SHSHHelperOutput.zip *.deb
