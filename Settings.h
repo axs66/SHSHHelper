@@ -1,9 +1,10 @@
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
 @interface Settings : NSObject
 
-+ (instancetype)sharedInstance;
-- (void)saveSettings;
-- (void)loadSettings;
+// 方法声明
+- (NSString *)getECID;
+- (NSString *)getDeviceModel;
 
 @end
