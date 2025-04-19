@@ -1,38 +1,36 @@
 #import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
-#import "Settings.h"  // 仅导入 Settings.h，不导入 Settings.xm
+#import "Settings.h"  // 导入 Settings.h，不导入 Settings.xm
 
 %hook SettingsViewController  // 假设你的视图控制器类名为 SettingsViewController
 
-// 覆写 viewDidLoad 方法
 - (void)viewDidLoad {
     %orig;
 
     // 获取 Settings 实例
     Settings *settings = [[Settings alloc] init];
 
-    // 获取 ECID 和型号
+    // 获取 ECID 和设备型号
     NSString *ecid = [settings getECID];
     NSString *deviceModel = [settings getDeviceModel];
-    
+
     // 创建显示 ECID 和型号的 UILabel
     UILabel *ecidLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 50, 300, 30)];
     ecidLabel.text = [NSString stringWithFormat:@"ECID: %@", ecid];
     ecidLabel.font = [UIFont systemFontOfSize:16];
     [self.view addSubview:ecidLabel];
-    
+
     UILabel *modelLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 90, 300, 30)];
     modelLabel.text = [NSString stringWithFormat:@"型号: %@", deviceModel];
     modelLabel.font = [UIFont systemFontOfSize:16];
     [self.view addSubview:modelLabel];
-    
+
     // 创建复制 ECID 按钮
     UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeSystem];
     copyButton.frame = CGRectMake(20, 130, 150, 40);
     [copyButton setTitle:@"复制 ECID" forState:UIControlStateNormal];
     [copyButton addTarget:self action:@selector(copyECID) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:copyButton];
-    
+
     // 创建跳转 TSS Saver 按钮
     UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeSystem];
     saveButton.frame = CGRectMake(20, 180, 150, 40);
