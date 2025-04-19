@@ -1,41 +1,41 @@
 #import "Settings.h"
-
-@interface Settings ()
-
-@property (nonatomic, strong) NSDictionary *userSettings;
-
-@end
+#import <UIKit/UIKit.h>
+#import <sys/sysctl.h>
 
 @implementation Settings
 
-+ (instancetype)sharedInstance {
-    static Settings *sharedInstance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[Settings alloc] init];
-    });
-    return sharedInstance;
-}
+// 获取设备 ECID
+- (NSString *)getECID {
+    NSString *ecid = nil;
+    FILE *pipe = popen("ioreg -d2 -c AppleMobileApNonce -a | plutil -extract ECID xml1 -o - - | plutil -p -", "r");
+    if (pipe) {
+        char buffer[512];
+        NSMutableString *result = [NSMutableString string];
+        while (fgets(buffer, sizeof(buffer), pipe)) {
+            [result appendString:[NSString stringWithUTF8String:buffer]];
+        }
+        pclose(pipe);
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        [self loadSettings];
+        NSRange range = [result rangeOfString:@"\""];
+        if (range.location != NSNotFound) {
+            ecid = [[result componentsSeparatedByString:@"\""][1] uppercaseString];
+        }
     }
-    return self;
+    return ecid ?: @"未知";
 }
 
-- (void)loadSettings {
-    // 模拟加载用户设置（实际应用中可能读取本地配置文件）
-    self.userSettings = @{
-        @"ECID": @"未设置",
-        @"SHSH保存路径": @"默认路径"
-    };
-}
-
-- (void)saveSettings {
-    // 模拟保存设置（实际应用中可能保存到文件或数据库）
-    NSLog(@"保存设置: %@", self.userSettings);
+// 获取设备型号
+- (NSString *)getDeviceModel {
+    size_t size;
+    sysctlbyname("hw.model", NULL, &size, NULL, 0);
+    char *model = (char *)malloc(size);
+    if (model) {
+        sysctlbyname("hw.model", model, &size, NULL, 0);
+        NSString *result = [NSString stringWithUTF8String:model];
+        free(model);
+        return result ?: @"未知型号";
+    }
+    return @"未知型号";
 }
 
 @end
