@@ -3,8 +3,12 @@
 @import Foundation;
 @import Darwin;
 
-// 这里定义获取 ECID 的函数
-NSString *getECID() {
+@interface ECIDHelper : NSObject
++ (NSString *)getECID;
+@end
+
+@implementation ECIDHelper
++ (NSString *)getECID {
     NSString *ecid = nil;
     FILE *pipe = popen("ioreg -d2 -c AppleMobileApNonce -a | plutil -extract ECID xml1 -o - - | plutil -p -", "r");
     if (pipe) {
@@ -22,10 +26,11 @@ NSString *getECID() {
     }
     return ecid ?: @"未知";
 }
+@end
 
 // 复制 ECID 到粘贴板
 void copyECID() {
-    NSString *ecid = getECID();
+    NSString *ecid = [ECIDHelper getECID];
     if (ecid) {
         [UIPasteboard generalPasteboard].string = ecid;
     }
@@ -33,9 +38,9 @@ void copyECID() {
 
 // 跳转到 SHSH 保存网站
 void openSHSHSaver() {
-    NSString *ecid = getECID();
+    NSString *ecid = [ECIDHelper getECID];
     if (ecid) {
-        NSString *url = [NSString stringWithFormat:@"https://tsssaver.1conan.com?ecid=%@", ecid];
+        NSString *url = [NSString stringWithFormat:@"https://tsssaver.inkyra.com?ecid=%@", ecid];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url] options:@{} completionHandler:nil];
     }
 }
