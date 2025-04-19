@@ -43,16 +43,9 @@ jobs:
           echo "Listing contents of the current directory:"
           ls -la
 
-      # 确认 SHSHHelper 是否存在，确保没有问题
-      - name: Check if SHSHHelper exists
-        run: |
-          echo "Listing contents after checkout:"
-          ls -la
-
       # 编译插件
       - name: Build the tweak
         run: |
-          cd SHSHHelper  # 确保你当前路径正确
           make clean
           make package
 
