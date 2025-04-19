@@ -1,4 +1,4 @@
-name: Build SHSHHelper Tweak (Manual Artifact Output)
+name: Build SHSHHelper Tweak (Stable)
 
 on:
   push:
@@ -18,17 +18,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip cmake git
+          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl
 
-      - name: Build and install ldid
+      - name: Install ldid
         run: |
-          git clone https://github.com/tpoechtrager/ldid.git
-          cd ldid
-          git submodule update --init
-          chmod +x make.sh
-          ./make.sh
-          sudo cp ldid /usr/local/bin/
-          cd ..
+          curl -LO https://github.com/ProcursusTeam/ldid/releases/latest/download/ldid_linux_x86_64
+          chmod +x ldid_linux_x86_64
+          sudo mv ldid_linux_x86_64 /usr/local/bin/ldid
 
       - name: Setup Theos
         run: |
