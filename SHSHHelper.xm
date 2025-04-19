@@ -43,14 +43,14 @@
 
 // 复制 ECID 到剪贴板
 - (void)copyECID {
-    NSString *ecid = [self getECID];
+    NSString *ecid = getECID();
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = ecid;
 }
 
 // 打开 TSS Saver 链接
 - (void)openSHSHLink {
-    NSString *ecid = [self getECID];
+    NSString *ecid = getECID();
     NSString *shshURL = [NSString stringWithFormat:@"https://tsssaver.inkyra.com/?ecid=%@", ecid];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:shshURL] options:@{} completionHandler:nil];
 }
