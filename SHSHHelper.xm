@@ -1,20 +1,27 @@
-// 导入所需的头文件
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "Settings.h"  // 导入 Settings 类
 
 %hook Settings
 
 - (void)viewDidLoad {
     %orig;
 
+    // 获取 Settings 实例
+    Settings *settings = [[Settings alloc] init];
+
+    // 获取 ECID 和型号
+    NSString *ecid = [settings getECID];
+    NSString *deviceModel = [settings getDeviceModel];
+    
     // 创建显示 ECID 和型号的 UILabel
     UILabel *ecidLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 50, 300, 30)];
-    ecidLabel.text = [NSString stringWithFormat:@"ECID: %@", [self getECID]];
+    ecidLabel.text = [NSString stringWithFormat:@"ECID: %@", ecid];
     ecidLabel.font = [UIFont systemFontOfSize:16];
     [self.view addSubview:ecidLabel];
     
     UILabel *modelLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 90, 300, 30)];
-    modelLabel.text = [NSString stringWithFormat:@"型号: %@", [self getDeviceModel]];
+    modelLabel.text = [NSString stringWithFormat:@"型号: %@", deviceModel];
     modelLabel.font = [UIFont systemFontOfSize:16];
     [self.view addSubview:modelLabel];
     
