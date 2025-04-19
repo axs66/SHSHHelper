@@ -4,6 +4,7 @@
 
 %hook Settings
 
+// 覆写 viewDidLoad 方法
 - (void)viewDidLoad {
     %orig;
 
