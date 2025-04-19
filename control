@@ -1,6 +1,6 @@
 Package: com.axs.shshhelper
 Name: SHSHHelper
-Version: 1.0.0
+Version: 1.0.1
 Architecture: iphoneos-arm64
 Description: 显示 ECID 并提供 SHSH 保存链接（支持设置页和控制中心）
 Maintainer: Axs
