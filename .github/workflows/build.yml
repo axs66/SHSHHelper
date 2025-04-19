@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          submodules: recursive  # 如果你有 submodule，确保它也会被下载
+          submodules: recursive
 
       # 安装依赖
       - name: Install dependencies
@@ -36,7 +36,17 @@ jobs:
           echo "export THEOS=~/theos" >> $GITHUB_ENV
           echo "export THEOS_MAKE_PATH=$THEOS/makefiles" >> $GITHUB_ENV
 
-      # 调试：列出仓库根目录的所有文件，确认 Makefile 是否存在
+      # 列出项目目录中是否仍存在 ccmodule.mk
+      - name: List repo files before build
+        run: |
+          find . -name "ccmodule.mk"
+
+      # 清理旧构建缓存
+      - name: Clean previous build artifacts
+        run: |
+          rm -rf *.deb packages/ .theos/
+
+      # 调试：列出仓库根目录内容
       - name: List repository contents
         run: |
           echo "Current directory:"
@@ -44,7 +54,7 @@ jobs:
           echo "Listing contents of the current directory:"
           ls -la
 
-      # 调试：列出 Theos 的目录，确保其被正确安装
+      # 调试：列出 Theos 的目录
       - name: List Theos contents
         run: |
           ls -la ~/theos
