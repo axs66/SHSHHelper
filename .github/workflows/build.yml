@@ -36,12 +36,14 @@ jobs:
         run: |
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
+          echo "THEOS_TARGET=linux" >> $GITHUB_ENV  # 设置为 Linux
 
-      # 禁用 SDK 检查并设置 Linux 构建目标
-      - name: Set target to Linux and disable SDK check
+      # 禁用 SDK 查找和 clang 配置
+      - name: Disable iOS SDK and clang
         run: |
-          echo "THEOS_TARGET=linux" >> $GITHUB_ENV
-          echo "export THEOS_TARGET=linux" >> ~/.bashrc
+          echo "export SDKROOT=/dummy" >> ~/.bashrc  # 防止查找 SDK
+          echo "export CLANG=clang" >> ~/.bashrc  # 使用 Linux 版本的 clang
+          echo "export THEOS_TOOLCHAIN=linux" >> ~/.bashrc  # 强制使用 Linux 工具链
 
       # 清理旧构建缓存
       - name: Clean previous build artifacts
