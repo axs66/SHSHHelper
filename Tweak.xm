@@ -3,7 +3,7 @@
 #import <sys/sysctl.h>
 #import <stdlib.h>
 #import <Foundation/Foundation.h>
-#import "Settings.h"
+#import "Settings.h"  // 必须保留，如果你需要与系统设置集成
 
 // ✅ 工具函数：获取 ECID（从 IORegistry 读取）
 NSString *getECID() {
@@ -101,39 +101,39 @@ void openSHSHSaver() {
 %end
 
 // ✅ 控制中心模块（如果你也想 hook 控制中心模块，可以视情况保留）
-/* %hook CCUIModuleViewController
-
-- (void)viewDidAppear:(BOOL)animated {
-    %orig;
-
-    if ([self.description containsString:@"SHSHHelper"]) {
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 280, 20)];
-        label.text = [NSString stringWithFormat:@"ECID: %@", getECID()];
-        label.font = [UIFont systemFontOfSize:12];
-        [self.view addSubview:label];
-
-        UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
-        btn.frame = CGRectMake(10, 35, 100, 30);
-        [btn setTitle:@"复制 ECID" forState:UIControlStateNormal];
-        [btn addTarget:self action:@selector(ccCopyECIDTapped) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:btn];
-
-        UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeSystem];
-        btn2.frame = CGRectMake(120, 35, 140, 30);
-        [btn2 setTitle:@"跳转保存 SHSH" forState:UIControlStateNormal];
-        [btn2 addTarget:self action:@selector(ccSHSHTapped) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:btn2];
-    }
-}
-
-%new
-- (void)ccCopyECIDTapped {
-    copyECID();
-}
-
-%new
-- (void)ccSHSHTapped {
-    openSHSHSaver();
-}
-
-%end */
+// %hook CCUIModuleViewController
+//
+// - (void)viewDidAppear:(BOOL)animated {
+//     %orig;
+//
+//     if ([self.description containsString:@"SHSHHelper"]) {
+//         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 280, 20)];
+//         label.text = [NSString stringWithFormat:@"ECID: %@", getECID()];
+//         label.font = [UIFont systemFontOfSize:12];
+//         [self.view addSubview:label];
+//
+//         UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
+//         btn.frame = CGRectMake(10, 35, 100, 30);
+//         [btn setTitle:@"复制 ECID" forState:UIControlStateNormal];
+//         [btn addTarget:self action:@selector(ccCopyECIDTapped) forControlEvents:UIControlEventTouchUpInside];
+//         [self.view addSubview:btn];
+//
+//         UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeSystem];
+//         btn2.frame = CGRectMake(120, 35, 140, 30);
+//         [btn2 setTitle:@"跳转保存 SHSH" forState:UIControlStateNormal];
+//         [btn2 addTarget:self action:@selector(ccSHSHTapped) forControlEvents:UIControlEventTouchUpInside];
+//         [self.view addSubview:btn2];
+//     }
+// }
+//
+// %new
+// - (void)ccCopyECIDTapped {
+//     copyECID();
+// }
+//
+// %new
+// - (void)ccSHSHTapped {
+//     openSHSHSaver();
+// }
+//
+// %end
