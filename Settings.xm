@@ -1,14 +1,26 @@
-#import <UIKit/UIKit.h>
-#import "ECIDViewController.h"  // 导入新的视图控制器
+#import "SettingsController.xm"
 
-%hook Settings
+%hook SettingsController
 
 - (void)viewDidLoad {
     %orig;
-    
-    ECIDViewController *ecidVC = [[ECIDViewController alloc] init];
-    // 如果使用导航控制器（如果存在），将其推送
-    [self.navigationController pushViewController:ecidVC animated:YES];
+
+    // 添加保存设置按钮
+    UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    saveButton.frame = CGRectMake(60, 300, self.view.frame.size.width - 120, 44);
+    [saveButton setTitle:@"保存设置" forState:UIControlStateNormal];
+    [saveButton addTarget:self action:@selector(saveSettings) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:saveButton];
+}
+
+- (void)saveSettings {
+    [[Settings sharedInstance] saveSettings];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"保存成功"
+                                                                   message:@"您的设置已成功保存"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:action];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 %end
