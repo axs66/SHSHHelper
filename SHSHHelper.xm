@@ -1,15 +1,17 @@
 #import <UIKit/UIKit.h>
-#import "Settings.h"  // 导入 Settings.h，不导入 Settings.xm
+#import "Settings.h"
+#import "SettingsViewController.h"  // 引入完整的 SettingsViewController.h
 
-%hook SettingsViewController  // 假设你的视图控制器类名为 SettingsViewController
+%hook SettingsViewController
 
+// 覆写 viewDidLoad 方法
 - (void)viewDidLoad {
     %orig;
 
     // 获取 Settings 实例
     Settings *settings = [[Settings alloc] init];
 
-    // 获取 ECID 和设备型号
+    // 获取 ECID 和型号
     NSString *ecid = [settings getECID];
     NSString *deviceModel = [settings getDeviceModel];
 
