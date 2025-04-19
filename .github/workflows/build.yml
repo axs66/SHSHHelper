@@ -3,76 +3,45 @@ name: Build SHSHHelper Tweak (Auto Release)
 on:
   push:
     branches:
-      - main  # 仅在推送到 main 分支时触发
+      - main
     paths:
-      - '.github/workflows/build.yml'  # 监控 build.yml 文件的变化
-      - 'Tweak.xm'  # 增加对 Tweak.xm 文件的监控
+      - '.github/workflows/build.yml'
+      - 'Tweak.xm'
       - 'control'
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 使用 Ubuntu 环境来构建
+    runs-on: macos-latest
 
     steps:
-      # 获取仓库代码
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           submodules: true
 
-      # 安装依赖（基础构建工具）
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl make jq
+      - name: Use Theos Setup Action
+        uses: axs66/theos-action@main
 
-      # 安装 Theos
-      - name: Install Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git ~/theos
+      - name: Clean previous packages
+        run: rm -f ${{ github.workspace }}/packages/*.deb
 
-      # 设置 Theos 环境变量
-      - name: Export THEOS path
+      - name: Build DEB (rootless + roothide)
         run: |
-          echo "THEOS=~/theos" >> $GITHUB_ENV
-          echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
-          echo "THEOS_TARGET=linux" >> $GITHUB_ENV  # 设置为 Linux
-
-      # 禁用 SDK 查找和 clang 配置
-      - name: Disable iOS SDK and clang
-        run: |
-          echo "export SDKROOT=/dummy" >> ~/.bashrc  # 防止查找 SDK
-          echo "export CLANG=clang" >> ~/.bashrc  # 使用 Linux 版本的 clang
-          echo "export THEOS_TOOLCHAIN=linux" >> ~/.bashrc  # 强制使用 Linux 工具链
-
-      # 清理旧构建缓存
-      - name: Clean previous build artifacts
-        run: |
-          rm -rf *.deb packages/ .theos/
-
-      # 构建插件
-      - name: Build the tweak
-        run: |
-          make clean
           make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide
 
-      # 列出生成的 .deb 包
       - name: List generated DEBs
-        run: |
-          ls -lh packages/
+        run: ls -lh ${{ github.workspace }}/packages
 
-      # 创建 GitHub Release
       - name: Create GitHub Release
         run: |
           VERSION=$(date +v%Y%m%d%H%M)
-          gh release create $VERSION packages/*.deb --title "SHSHHelper $VERSION" --notes "自动构建 SHSHHelper .deb 安装包"
+          gh release create $VERSION ${{ github.workspace }}/packages/*.deb --title "SHSHHelper $VERSION" --notes "自动构建 .deb 安装包"
         env:
           GH_TOKEN: ${{ secrets.PAT }}
 
-      # 上传 .deb 到工作流 artifacts
       - name: Upload DEB to workflow artifacts
         uses: actions/upload-artifact@v4.3.3
         with:
           name: SHSHHelper
-          path: packages/*.deb
+          path: ${{ github.workspace }}/packages/*.deb
