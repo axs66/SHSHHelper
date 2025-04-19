@@ -27,7 +27,7 @@ NSString *getECID() {
 NSString *getDeviceModel() {
     size_t size;
     sysctlbyname("hw.model", NULL, &size, NULL, 0);
-    char *model = malloc(size);
+    char *model = (char *)malloc(size); // ✅ 强制类型转换
     sysctlbyname("hw.model", model, &size, NULL, 0);
     NSString *result = [NSString stringWithUTF8String:model];
     free(model);
@@ -58,7 +58,7 @@ void openSHSHSaver() {
 
     // 仅注入 SHSHHelper 设置页（根据标题识别）
     if ([self.title.lowercaseString containsString:@"shsh"]) {
-        UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.table.view.bounds.size.width, 200)];
+        UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.table.bounds.size.width, 200)]; // ✅ 修正
 
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 20, header.frame.size.width - 30, 40)];
         label.text = [NSString stringWithFormat:@"ECID: %@", getECID()];
@@ -77,7 +77,7 @@ void openSHSHSaver() {
         [header addSubview:copyBtn];
 
         UIButton *shshBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-        shshBtn.frame = CGRectMake(15, 150, 180, 35);
+        shshBtn.frame = CGRectMake(15, 150, 150, 35);
         [shshBtn setTitle:@"跳转保存 SHSH" forState:UIControlStateNormal];
         [shshBtn addTarget:self action:@selector(openSHSHSaverBtnTapped) forControlEvents:UIControlEventTouchUpInside];
         [header addSubview:shshBtn];
@@ -98,9 +98,8 @@ void openSHSHSaver() {
 
 %end
 
-/*
-// ✅ 控制中心模块 - 暂时注释掉以确保编译成功
-%hook CCUIModuleViewController
+// ✅ 控制中心模块（如果你也想 hook 控制中心模块，可以视情况保留）
+/* %hook CCUIModuleViewController
 
 - (void)viewDidAppear:(BOOL)animated {
     %orig;
@@ -135,6 +134,4 @@ void openSHSHSaver() {
     openSHSHSaver();
 }
 
-%end
-*/
-
+%end */
