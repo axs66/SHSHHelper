@@ -6,7 +6,7 @@ include $(THEOS)/makefiles/common.mk
 # Tweak 模块配置
 TWEAK_NAME = SHSHHelper
 SHSHHelper_FILES = Tweak.xm SHSHHelper.xm SHSHHelperCCModule.xm SettingsViewController.m Settings.m
-SHSHHelper_FRAMEWORKS = UIKit
+SHSHHelper_FRAMEWORKS = UIKit Foundation
 
 # 控制中心模块配置
 CCMODULE_NAME = SHSHHelperCC
@@ -25,5 +25,6 @@ internal-stage::
 	cp $(THEOS_OBJ_DIR)/SHSHHelperCC.bundle/SHSHHelperCC \
 	   $(THEOS_STAGING_DIR)/Library/ControlCenter/Bundles/
 	
-	# 你可以添加更多自定义文件到 staging 目录
-	# cp $(THEOS_OBJ_DIR)/SHSHHelper.dylib $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/
+	# 确保 SHSHHelper.dylib 被拷贝到合适的目录
+	mkdir -p $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries
+	cp $(THEOS_OBJ_DIR)/SHSHHelper.dylib $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/
