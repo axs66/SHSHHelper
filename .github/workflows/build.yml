@@ -20,9 +20,19 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang llvm ldid fakeroot dpkg-dev zip
+          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip cmake git
 
-      # 设置 Theos
+      # 安装 ldid（手动构建）
+      - name: Build and install ldid
+        run: |
+          git clone https://github.com/tpoechtrager/ldid.git
+          cd ldid
+          git submodule update --init
+          ./make.sh
+          sudo cp ldid /usr/local/bin/
+          cd ..
+
+      # 安装 Theos
       - name: Setup Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
@@ -35,7 +45,7 @@ jobs:
           make clean
           make package
 
-      # 打包输出成 zip（你可以在 Action 的Artifacts面板中下载）
+      # 打包成 zip 供下载
       - name: Zip deb output
         run: |
           cd SHSHHelper/packages
