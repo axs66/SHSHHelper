@@ -13,6 +13,5 @@ CCMODULE_NAME = SHSHHelperCC
 SHSHHelperCC_FILES = SHSHHelperCCModule.xm
 SHSHHelperCC_FRAMEWORKS = UIKit ControlCenterUIKit
 
-# 引入 Theos 的 Makefile
 include $(THEOS_MAKE_PATH)/tweak.mk
-include $(THEOS_MAKE_PATH)/ccmodule.mk
+include ccmodule.mk   # ✅ 改成这样
