@@ -3,7 +3,7 @@ name: Build SHSHHelper Tweak (Auto Release)
 on:
   push:
     branches:
-      - main  # 触发脚本的分支，可以修改为你自己的分支
+      - main
 
 jobs:
   build:
@@ -34,6 +34,7 @@ jobs:
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
           echo "export THEOS=~/theos" >> $GITHUB_ENV
+          echo "export THEOS_MAKE_PATH=$THEOS/makefiles" >> $GITHUB_ENV
 
       # 调试：列出仓库根目录的所有文件，确认 Makefile 是否存在
       - name: List repository contents
@@ -42,6 +43,11 @@ jobs:
           pwd
           echo "Listing contents of the current directory:"
           ls -la
+
+      # 调试：列出 Theos 的目录，确保其被正确安装
+      - name: List Theos contents
+        run: |
+          ls -la ~/theos
 
       # 编译插件
       - name: Build the tweak
