@@ -1,4 +1,4 @@
-name: Build SHSHHelper Tweak (Stable)
+name: Build SHSHHelper Tweak (Auto Release)
 
 on:
   push:
@@ -10,34 +10,68 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Manually clone repo
-        run: |
-          git clone ${{ github.server_url }}/${{ github.repository }} .
-          git checkout ${{ github.ref_name }}
+      # 获取仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive  # 如果你有 submodule，确保它也会被下载
 
+      # 安装依赖
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl
 
+      # 安装 ldid
       - name: Install ldid
         run: |
           curl -LO https://github.com/ProcursusTeam/ldid/releases/latest/download/ldid_linux_x86_64
           chmod +x ldid_linux_x86_64
           sudo mv ldid_linux_x86_64 /usr/local/bin/ldid
 
+      # 安装 Theos
       - name: Setup Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
           echo "export THEOS=~/theos" >> $GITHUB_ENV
 
+      # 确保进入到 SHSHHelper 目录
+      - name: Ensure we're in the SHSHHelper directory
+        run: |
+          cd SHSHHelper || exit 1
+          pwd  # 打印当前路径确认目录是否存在
+
+      # 编译插件
       - name: Build the tweak
         run: |
           cd SHSHHelper
           make clean
           make package
 
+      # 打包 .deb 包为 ZIP
       - name: Zip deb output
         run: |
           cd SHSHHelper/packages
           zip -r ../../../SHSHHelperOutput.zip *.deb
+
+      # 创建 GitHub Release
+      - name: Create Release
+        id: create_release
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT }}" \
+            -H "Content-Type: application/json" \
+            -d '{"tag_name": "v1.0.0", "name": "v1.0.0", "body": "SHSHHelper tweak release"}' \
+            https://api.github.com/repos/${{ github.repository }}/releases
+
+      # 上传 .deb 包到 Release
+      - name: Upload .deb to Release
+        run: |
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.0.0 | jq -r .id)
+
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT }}" \
+            -H "Content-Type: application/zip" \
+            --data-binary @SHSHHelperOutput.zip \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/${RELEASE_ID}/assets?name=SHSHHelperOutput.zip"
