@@ -1,30 +1,13 @@
 ARCHS = arm64 arm64e
-TARGET = iphone:clang:latest:latest
+TARGET = iphone:clang:latest:14.0
+THEOS_PACKAGE_SCHEME = rootless
+INSTALL_TARGET_PROCESSES = SpringBoard Preferences
 
 include $(THEOS)/makefiles/common.mk
 
-# Tweak 模块配置
 TWEAK_NAME = SHSHHelper
-SHSHHelper_FILES = Tweak.xm SHSHHelper.xm Settings.m  # 添加 Settings.m 到文件列表
-SHSHHelper_FRAMEWORKS = UIKit
+SHSHHelper_FILES = Tweak.xm SHSHHelperCore.xm SHSHHelperUI.m SHSHHelperCCModule.xm
+SHSHHelper_FRAMEWORKS = UIKit Foundation
+SHSHHelper_PRIVATE_FRAMEWORKS = Preferences ControlCenterUI
 
-# 控制中心模块配置
-CCMODULE_NAME = SHSHHelperCC
-SHSHHelperCC_FILES = SHSHHelperCCModule.xm
-SHSHHelperCC_FRAMEWORKS = UIKit ControlCenterUIKit
-
-# 包含的头文件路径
-HEADER_SEARCH_PATHS = $(THEOS)/include
-
-# 目标目标文件
 include $(THEOS_MAKE_PATH)/tweak.mk
-include $(THEOS_MAKE_PATH)/ccmodule.mk
-
-# 合并两个模块为一个 deb 包
-internal-stage::
-	mkdir -p $(THEOS_STAGING_DIR)/Library/ControlCenter/Bundles
-	cp $(THEOS_OBJ_DIR)/SHSHHelperCC.bundle/SHSHHelperCC \
-	   $(THEOS_STAGING_DIR)/Library/ControlCenter/Bundles/
-	
-	# 你可以添加更多自定义文件到 staging 目录
-	# cp $(THEOS_OBJ_DIR)/SHSHHelper.dylib $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/
