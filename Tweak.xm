@@ -1,5 +1,7 @@
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
+@import UIKit;
+@import Foundation;
+@import Darwin;
+
 #import "Settings.h"
 
 // ✅ 工具函数：获取 ECID（从 IORegistry 读取）
