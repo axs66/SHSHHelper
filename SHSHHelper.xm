@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "Settings.h"  // 导入 Settings 类
+#import "Settings.h"  // 仅导入 Settings.h，不导入 Settings.xm
 
 %hook SettingsViewController  // 假设你的视图控制器类名为 SettingsViewController
 
