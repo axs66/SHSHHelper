@@ -1,11 +1,10 @@
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface Settings : NSObject
 
-// 获取设备 ECID
-+ (NSString *)getECID;
-
-// 获取设备型号
-+ (NSString *)getDeviceModel;
+// 方法声明
+- (NSString *)getECID;
+- (NSString *)getDeviceModel;
 
 @end
