@@ -8,10 +8,6 @@ TWEAK_NAME = SHSHHelper
 SHSHHelper_FILES = Tweak.xm SHSHHelper.xm
 SHSHHelper_FRAMEWORKS = UIKit
 
-# Control Center 模块部分
-CCMODULE_NAME = SHSHHelperCC
-SHSHHelperCC_FILES = SHSHHelperCCModule.xm
-SHSHHelperCC_FRAMEWORKS = UIKit ControlCenterUIKit
-
+# Control Center 模块（ccmodule.mk 中继续定义具体内容）
 include $(THEOS_MAKE_PATH)/tweak.mk
-include ccmodule.mk   # ✅ 改成这样
+include ccmodule.mk   # ✅ 本地路径，引入项目根目录下的 ccmodule.mk
