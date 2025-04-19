@@ -31,10 +31,14 @@ jobs:
 
       # 安装 Theos
       - name: Setup Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git ~/theos
-          echo "export THEOS=~/theos" >> $GITHUB_ENV
-          echo "export THEOS_MAKE_PATH=$THEOS/makefiles" >> $GITHUB_ENV
+  run: |
+    git clone --recursive https://github.com/theos/theos.git ~/theos
+
+- name: Set Theos environment
+  run: |
+    echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+    echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
+
 
       # 列出项目目录中是否仍存在 ccmodule.mk
       - name: List repo files before build
