@@ -38,19 +38,15 @@ jobs:
       # 调试：列出仓库根目录的所有文件，确认 Makefile 是否存在
       - name: List repository contents
         run: |
-          ls -la  # 打印仓库根目录的所有文件和目录
-
-      # 调试：列出 Theos 的目录，确保其被正确安装
-      - name: List Theos contents
-        run: |
-          ls -la ~/theos
-
-      # 确认当前目录，检查是否能找到 SHSHHelper 文件夹
-      - name: Check if SHSHHelper exists
-        run: |
           echo "Current directory:"
           pwd
           echo "Listing contents of the current directory:"
+          ls -la
+
+      # 确认 SHSHHelper 是否存在，确保没有问题
+      - name: Check if SHSHHelper exists
+        run: |
+          echo "Listing contents after checkout:"
           ls -la
 
       # 编译插件
