@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 如果你没有 macOS 环境，也可以使用 ubuntu-latest
+    runs-on: ubuntu-latest  # 或者 macos-latest，取决于你的环境需求
 
     steps:
       # 获取仓库代码
@@ -36,6 +36,13 @@ jobs:
         run: |
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
+
+      # 安装 iOS Toolchain
+      - name: Install iOS Toolchain
+        run: |
+          mkdir -p ~/theos/toolchain
+          curl -LO https://github.com/theos/toolchain-linux/releases/download/latest/toolchain.tar.xz
+          tar -xf toolchain.tar.xz -C ~/theos/toolchain
 
       # 清理旧构建缓存
       - name: Clean previous build artifacts
