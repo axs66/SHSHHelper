@@ -1,6 +1,5 @@
-#import <UIKit/UIKit.h>
-#import <ControlCenterUIKit/ControlCenterUIKit.h>
-#import "Tweak.xm" // 引入 Tweak.xm 确保 getECID 可用
+// SHSHHelperCCModule.xm
+#import "Tweak.xm"  // 确保导入 Tweak.xm 中的函数
 
 %hook CCUIControlCenterModule
 
@@ -8,7 +7,7 @@
     %orig;
     
     // 获取 ECID
-    NSString *ecid = [self getECID];
+    NSString *ecid = [ECIDHelper getECID];
     
     // 如果 ECID 为空，显示错误消息
     if (ecid.length == 0) {
@@ -22,7 +21,10 @@
     [ecidButton addTarget:self action:@selector(copyECID) forControlEvents:UIControlEventTouchUpInside];
     [ecidButton setBackgroundColor:[UIColor lightGrayColor]];
     [ecidButton.layer setCornerRadius:8.0];
-    [self.view addSubview:ecidButton];
+    
+    // 使用合适的方式访问 viewController 来添加按钮
+    UIViewController *viewController = self.viewController;
+    [viewController.view addSubview:ecidButton];
     
     // 创建跳转 TSS Saver 按钮
     UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -31,19 +33,12 @@
     [saveButton addTarget:self action:@selector(openSHSHLink) forControlEvents:UIControlEventTouchUpInside];
     [saveButton setBackgroundColor:[UIColor blueColor]];
     [saveButton.layer setCornerRadius:8.0];
-    [self.view addSubview:saveButton];
-}
-
-// 获取 ECID（从系统配置文件中读取）
-- (NSString *)getECID {
-    NSString *ecid = [NSString stringWithContentsOfFile:@"/System/Library/Lockdown/activation_record.plist" encoding:NSUTF8StringEncoding error:nil];
-    // 提取 ECID 字段（十六进制）
-    return [ecid stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [viewController.view addSubview:saveButton];
 }
 
 // 复制 ECID 到剪贴板
 - (void)copyECID {
-    NSString *ecid = [self getECID];
+    NSString *ecid = [ECIDHelper getECID];
     if (ecid.length == 0) {
         ecid = @"无法获取 ECID";
     }
@@ -53,7 +48,7 @@
 
 // 打开 TSS Saver 链接
 - (void)openSHSHLink {
-    NSString *ecid = [self getECID];
+    NSString *ecid = [ECIDHelper getECID];
     if (ecid.length == 0) {
         ecid = @"无法获取 ECID";
     }
