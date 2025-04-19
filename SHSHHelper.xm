@@ -1,3 +1,7 @@
+// 导入所需的头文件
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
 %hook Settings
 
 - (void)viewDidLoad {
