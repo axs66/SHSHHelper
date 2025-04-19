@@ -28,10 +28,3 @@ internal-stage::
 	
 	# 你可以添加更多自定义文件到 staging 目录
 	# cp $(THEOS_OBJ_DIR)/SHSHHelper.dylib $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/
-
-ECIDViewController.h代码：
-#import <UIKit/UIKit.h>
-
-@interface ECIDViewController : UIViewController
-
-@end
