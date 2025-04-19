@@ -1,0 +1,44 @@
+name: Build SHSHHelper Tweak
+
+on:
+  push:
+    branches:
+      - main  # 触发脚本的分支，可以修改为你自己的分支
+  pull_request:
+    branches:
+      - main  # 合并时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 获取仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # 安装必需的依赖
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential clang llvm ldid
+
+      # 设置 Theos 环境
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+          echo "export THEOS=~/theos" >> ~/.bashrc
+          source ~/.bashrc
+
+      # 编译插件
+      - name: Build the tweak
+        run: |
+          cd SHSHHelper
+          make clean
+          make package
+          
+      # 上传 .deb 包
+      - name: Upload .deb package
+        uses: actions/upload-artifact@v2
+        with:
+          name: SHSHHelper-deb
+          path: SHSHHelper.deb
