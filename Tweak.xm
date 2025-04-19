@@ -1,9 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <Preferences/PSListController.h>
-#import <ControlCenterUIKit/CCUIModuleViewController.h>
 #import <sys/sysctl.h>
-#import <stdlib.h> // for malloc
-
+#import <stdlib.h>
 
 // ✅ 工具函数：获取 ECID（从 IORegistry 读取）
 NSString *getECID() {
@@ -79,7 +77,7 @@ void openSHSHSaver() {
         [header addSubview:copyBtn];
 
         UIButton *shshBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-        shshBtn.frame = CGRectMake(15, 150, 150, 35);
+        shshBtn.frame = CGRectMake(15, 150, 180, 35);
         [shshBtn setTitle:@"跳转保存 SHSH" forState:UIControlStateNormal];
         [shshBtn addTarget:self action:@selector(openSHSHSaverBtnTapped) forControlEvents:UIControlEventTouchUpInside];
         [header addSubview:shshBtn];
@@ -100,7 +98,8 @@ void openSHSHSaver() {
 
 %end
 
-// ✅ 控制中心模块（如果你也想 hook 控制中心模块，可以视情况保留）
+/*
+// ✅ 控制中心模块 - 暂时注释掉以确保编译成功
 %hook CCUIModuleViewController
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -137,3 +136,5 @@ void openSHSHSaver() {
 }
 
 %end
+*/
+
