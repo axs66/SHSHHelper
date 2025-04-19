@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "Settings.h"
+#import "Tweak.xm"
 #import "SettingsViewController.h"  // 引入完整的 SettingsViewController.h
 
 %hook SettingsViewController
