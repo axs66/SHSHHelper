@@ -1,34 +1,68 @@
 #import "ECIDViewController.h"
+#import "Settings.h"  // 导入 Settings 类
 
 @implementation ECIDViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    // 获取 Settings 实例
+    Settings *settings = [[Settings alloc] init];
 
-    self.view.backgroundColor = [UIColor systemBackgroundColor];
-    self.title = @"SHSHHelper";
-
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width - 40, 60)];
-    label.textAlignment = NSTextAlignmentCenter;
-    label.numberOfLines = 0;
-    label.text = [NSString stringWithFormat:@"ECID: %@", [self getECID]];
-    [self.view addSubview:label];
-
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    button.frame = CGRectMake(60, 200, self.view.frame.size.width - 120, 44);
-    [button setTitle:@"打开 SHSH 保存网站" forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(openSHSHWebsite) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
+    // 获取 ECID 和型号
+    NSString *ecid = [settings getECID];
+    NSString *deviceModel = [settings getDeviceModel];
+    
+    // 创建显示 ECID 和型号的 UILabel
+    UILabel *ecidLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 50, 300, 30)];
+    ecidLabel.text = [NSString stringWithFormat:@"ECID: %@", ecid];
+    ecidLabel.font = [UIFont systemFontOfSize:16];
+    [self.view addSubview:ecidLabel];
+    
+    UILabel *modelLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 90, 300, 30)];
+    modelLabel.text = [NSString stringWithFormat:@"型号: %@", deviceModel];
+    modelLabel.font = [UIFont systemFontOfSize:16];
+    [self.view addSubview:modelLabel];
+    
+    // 创建复制 ECID 按钮
+    UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    copyButton.frame = CGRectMake(20, 130, 150, 40);
+    [copyButton setTitle:@"复制 ECID" forState:UIControlStateNormal];
+    [copyButton addTarget:self action:@selector(copyECID) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:copyButton];
+    
+    // 创建跳转 TSS Saver 按钮
+    UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    saveButton.frame = CGRectMake(20, 180, 150, 40);
+    [saveButton setTitle:@"保存 SHSH" forState:UIControlStateNormal];
+    [saveButton addTarget:self action:@selector(openSHSHLink) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:saveButton];
 }
 
+// 获取 ECID（从系统配置文件中读取）
 - (NSString *)getECID {
-    return [[NSFileManager defaultManager] stringWithFileSystemRepresentation:getenv("ECID") length:strlen(getenv("ECID"))] ?: @"未知";
+    NSString *ecid = [NSString stringWithContentsOfFile:@"/System/Library/Lockdown/activation_record.plist" encoding:NSUTF8StringEncoding error:nil];
+    // 提取 ECID 字段（十六进制）
+    return [ecid stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
-- (void)openSHSHWebsite {
+// 获取设备型号（如 iPhone15,2）
+- (NSString *)getDeviceModel {
+    return [[UIDevice currentDevice] model];
+}
+
+// 复制 ECID 到剪贴板
+- (void)copyECID {
     NSString *ecid = [self getECID];
-    NSString *urlStr = [NSString stringWithFormat:@"https://shsh.host/#/%@", ecid];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlStr] options:@{} completionHandler:nil];
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = ecid;
+}
+
+// 打开 TSS Saver 链接
+- (void)openSHSHLink {
+    NSString *ecid = [self getECID];
+    NSString *shshURL = [NSString stringWithFormat:@"https://tsssaver.inkyra.com/?ecid=%@", ecid];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:shshURL] options:@{} completionHandler:nil];
 }
 
 @end
