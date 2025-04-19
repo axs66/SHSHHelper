@@ -1,5 +1,9 @@
 #import <UIKit/UIKit.h>
-#import <spawn.h>
+#import <Preferences/PSListController.h>
+#import <ControlCenterUIKit/CCUIModuleViewController.h>
+#import <sys/sysctl.h>
+#import <stdlib.h> // for malloc
+
 
 // ✅ 工具函数：获取 ECID（从 IORegistry 读取）
 NSString *getECID() {
