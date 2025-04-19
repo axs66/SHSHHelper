@@ -1,3 +1,6 @@
+#import <UIKit/UIKit.h>
+#import <ControlCenterUIKit/ControlCenterUIKit.h>
+
 %hook CCUIControlCenterModule
 
 - (void)configure {
