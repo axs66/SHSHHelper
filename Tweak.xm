@@ -4,23 +4,10 @@
 
 #import "Settings.h"
 
-// ✅ 工具函数：获取 ECID（从 IORegistry 读取）
+// ✅ 获取设备 ECID
 NSString *getECID() {
-    NSString *ecid = nil;
-    FILE *pipe = popen("ioreg -d2 -c AppleMobileApNonce -a | plutil -extract ECID xml1 -o - - | plutil -p -", "r");
-    if (pipe) {
-        char buffer[512];
-        NSMutableString *result = [NSMutableString string];
-        while (fgets(buffer, sizeof(buffer), pipe)) {
-            [result appendString:[NSString stringWithUTF8String:buffer]];
-        }
-        pclose(pipe);
-
-        NSRange range = [result rangeOfString:@"\""];
-        if (range.location != NSNotFound) {
-            ecid = [[result componentsSeparatedByString:@"\""][1] uppercaseString];
-        }
-    }
+    Settings *settings = [[Settings alloc] init];
+    NSString *ecid = [settings getECID];
     return ecid ?: @"未知";
 }
 
