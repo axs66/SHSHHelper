@@ -34,6 +34,7 @@ jobs:
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
           echo "export THEOS=~/theos" >> $GITHUB_ENV
+          echo "export THEOS_MAKE_PATH=\$THEOS/makefiles" >> $GITHUB_ENV
 
       # 调试：列出仓库根目录的所有文件，确认 Makefile 是否存在
       - name: List repository contents
@@ -48,6 +49,7 @@ jobs:
       # 编译插件
       - name: Build the tweak
         run: |
+          cd SHSHHelper  # 确保你当前路径正确
           make clean
           make package
 
