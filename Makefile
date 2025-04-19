@@ -3,7 +3,7 @@ TARGET = iphone:clang:latest:latest
 
 include $(THEOS)/makefiles/common.mk
 
-# Tweak部分
+# Tweak 部分
 TWEAK_NAME = SHSHHelper
 SHSHHelper_FILES = Tweak.xm SHSHHelper.xm
 SHSHHelper_FRAMEWORKS = UIKit
