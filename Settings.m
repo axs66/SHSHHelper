@@ -1,5 +1,4 @@
 #import "Settings.h"
-#import <UIKit/UIKit.h>
 #import <sys/sysctl.h>
 
 @implementation Settings
