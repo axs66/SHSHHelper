@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl make
+          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl make jq
 
       # 安装 ldid
       - name: Install ldid
@@ -31,37 +31,25 @@ jobs:
 
       # 安装 Theos
       - name: Setup Theos
-  run: |
-    git clone --recursive https://github.com/theos/theos.git ~/theos
-
-- name: Set Theos environment
-  run: |
-    echo "THEOS=$HOME/theos" >> $GITHUB_ENV
-    echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
-
-
-      # 列出项目目录中是否仍存在 ccmodule.mk
-      - name: List repo files before build
         run: |
-          find . -name "ccmodule.mk"
+          git clone --recursive https://github.com/theos/theos.git ~/theos
 
-      # 清理旧构建缓存
+      # 设置 Theos 环境变量（⚠️注意不能写 export）
+      - name: Set Theos environment
+        run: |
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+          echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
+
+      # ✅ 调试：列出仓库根目录的文件，确认没有旧的 ccmodule.mk
+      - name: Check for leftover ccmodule.mk
+        run: |
+          echo "查找是否有残留的 ccmodule.mk："
+          find . -name "ccmodule.mk" || true
+
+      # ✅ 清理之前的构建缓存
       - name: Clean previous build artifacts
         run: |
-          rm -rf *.deb packages/ .theos/
-
-      # 调试：列出仓库根目录内容
-      - name: List repository contents
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Listing contents of the current directory:"
-          ls -la
-
-      # 调试：列出 Theos 的目录
-      - name: List Theos contents
-        run: |
-          ls -la ~/theos
+          rm -rf .theos/ *.deb packages/ || true
 
       # 编译插件
       - name: Build the tweak
@@ -69,12 +57,12 @@ jobs:
           make clean
           make package
 
-      # 打包 .deb 包为 ZIP
+      # 打包 .deb 为 ZIP
       - name: Zip deb output
         run: |
           zip -r SHSHHelperOutput.zip *.deb
 
-      # 创建 GitHub Release
+      # 创建 GitHub Release（固定 tag 为 v1.0.0）
       - name: Create Release
         id: create_release
         run: |
@@ -84,7 +72,7 @@ jobs:
             -d '{"tag_name": "v1.0.0", "name": "v1.0.0", "body": "SHSHHelper tweak release"}' \
             https://api.github.com/repos/${{ github.repository }}/releases
 
-      # 上传 .deb 到 Release
+      # 上传 ZIP 到 Release
       - name: Upload .deb to Release
         run: |
           RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
