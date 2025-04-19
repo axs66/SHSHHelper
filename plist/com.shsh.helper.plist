@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>CCModule</key>
+    <dict>
+        <key>BundleIdentifier</key>
+        <string>com.shsh.helper</string>
+        <key>Identifier</key>
+        <string>SHSHHelper</string>
+        <key>Title</key>
+        <string>SHSHHelper</string>
+        <key>Icon</key>
+        <string>Icon.png</string>
+    </dict>
+</plist>
