@@ -3,6 +3,7 @@
 #import <sys/sysctl.h>
 #import <stdlib.h>
 #import <Foundation/Foundation.h>
+#import "Settings.h"
 
 // ✅ 工具函数：获取 ECID（从 IORegistry 读取）
 NSString *getECID() {
