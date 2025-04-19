@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl
+          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl make
 
       # 安装 ldid
       - name: Install ldid
@@ -35,10 +35,15 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git ~/theos
           echo "export THEOS=~/theos" >> $GITHUB_ENV
 
-      # 确保在仓库根目录进行操作
+      # 调试：列出仓库根目录的所有文件，确认 Makefile 是否存在
       - name: List repository contents
         run: |
           ls -la  # 打印仓库根目录的所有文件和目录
+
+      # 调试：列出 Theos 的目录，确保其被正确安装
+      - name: List Theos contents
+        run: |
+          ls -la ~/theos
 
       # 编译插件
       - name: Build the tweak
@@ -61,7 +66,7 @@ jobs:
             -d '{"tag_name": "v1.0.0", "name": "v1.0.0", "body": "SHSHHelper tweak release"}' \
             https://api.github.com/repos/${{ github.repository }}/releases
 
-      # 上传 .deb 包到 Release
+      # 上传 .deb 到 Release
       - name: Upload .deb to Release
         run: |
           RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
