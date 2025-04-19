@@ -1,5 +1,4 @@
 #import "ECIDViewController.h"
-#import "Settings.h"  // 导入 Settings 类
 
 @implementation ECIDViewController
 
@@ -9,7 +8,7 @@
     // 获取 Settings 实例
     Settings *settings = [[Settings alloc] init];
 
-    // 获取 ECID 和型号
+    // 获取 ECID 和设备型号
     NSString *ecid = [settings getECID];
     NSString *deviceModel = [settings getDeviceModel];
     
