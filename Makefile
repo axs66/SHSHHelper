@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 
 # Tweak 模块配置
 TWEAK_NAME = SHSHHelper
-SHSHHelper_FILES = Tweak.xm SHSHHelper.xm Settings.m ECIDViewController.m  # 添加 Settings.m 到文件列表
+SHSHHelper_FILES = Tweak.xm SHSHHelper.xm SHSHHelperCCModule.xm SettingsViewController.m Settings.m
 SHSHHelper_FRAMEWORKS = UIKit
 
 # 控制中心模块配置
