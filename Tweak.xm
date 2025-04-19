@@ -3,6 +3,7 @@
 #import <sys/sysctl.h>
 #import <stdlib.h>
 #import <Foundation/Foundation.h>
+#import <ECIDViewController/ECIDViewController.h>
 #import "Settings.h"  // 必须保留，如果你需要与系统设置集成
 
 // ✅ 工具函数：获取 ECID（从 IORegistry 读取）
