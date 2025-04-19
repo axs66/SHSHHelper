@@ -2,7 +2,7 @@
 #import <Foundation/Foundation.h>
 #import "Settings.h"  // 导入 Settings 类
 
-%hook Settings
+%hook SettingsViewController  // 假设你的视图控制器类名为 SettingsViewController
 
 // 覆写 viewDidLoad 方法
 - (void)viewDidLoad {
@@ -39,18 +39,6 @@
     [saveButton setTitle:@"保存 SHSH" forState:UIControlStateNormal];
     [saveButton addTarget:self action:@selector(openSHSHLink) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:saveButton];
-}
-
-// 获取 ECID（从系统配置文件中读取）
-- (NSString *)getECID {
-    NSString *ecid = [NSString stringWithContentsOfFile:@"/System/Library/Lockdown/activation_record.plist" encoding:NSUTF8StringEncoding error:nil];
-    // 提取 ECID 字段（十六进制）
-    return [ecid stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-}
-
-// 获取设备型号（如 iPhone15,2）
-- (NSString *)getDeviceModel {
-    return [[UIDevice currentDevice] model];
 }
 
 // 复制 ECID 到剪贴板
