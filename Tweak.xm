@@ -1,28 +1,29 @@
+// Tweak.xm
 @import UIKit;
 @import Foundation;
 @import Darwin;
 
-#import "Settings.h"
-
-// ✅ 获取设备 ECID
+// 这里定义获取 ECID 的函数
 NSString *getECID() {
-    Settings *settings = [[Settings alloc] init];
-    NSString *ecid = [settings getECID];
+    NSString *ecid = nil;
+    FILE *pipe = popen("ioreg -d2 -c AppleMobileApNonce -a | plutil -extract ECID xml1 -o - - | plutil -p -", "r");
+    if (pipe) {
+        char buffer[512];
+        NSMutableString *result = [NSMutableString string];
+        while (fgets(buffer, sizeof(buffer), pipe)) {
+            [result appendString:[NSString stringWithUTF8String:buffer]];
+        }
+        pclose(pipe);
+
+        NSRange range = [result rangeOfString:@"\""];
+        if (range.location != NSNotFound) {
+            ecid = [[result componentsSeparatedByString:@"\""][1] uppercaseString];
+        }
+    }
     return ecid ?: @"未知";
 }
 
-// ✅ 获取设备型号
-NSString *getDeviceModel() {
-    size_t size;
-    sysctlbyname("hw.model", NULL, &size, NULL, 0);
-    char *model = (char *)malloc(size);
-    sysctlbyname("hw.model", model, &size, NULL, 0);
-    NSString *result = [NSString stringWithUTF8String:model];
-    free(model);
-    return result ?: @"未知型号";
-}
-
-// ✅ 复制 ECID
+// 复制 ECID 到粘贴板
 void copyECID() {
     NSString *ecid = getECID();
     if (ecid) {
@@ -30,7 +31,7 @@ void copyECID() {
     }
 }
 
-// ✅ 跳转 SHSH 保存站点
+// 跳转到 SHSH 保存网站
 void openSHSHSaver() {
     NSString *ecid = getECID();
     if (ecid) {
