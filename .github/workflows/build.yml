@@ -4,71 +4,67 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '.github/workflows/build.yml'
+      - 'Tweak.xm'
+      - 'control'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # 如果你没有 macOS 环境，也可以使用 ubuntu-latest
 
     steps:
       # 获取仓库代码
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          submodules: recursive
+          submodules: true
 
-      # 更新包列表并修复依赖冲突
-      - name: Update package list and fix dependencies
+      # 安装依赖
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt upgrade -y
-          sudo apt install -y --fix-broken
+          sudo apt install -y build-essential clang llvm fakeroot dpkg-dev zip git curl make jq
 
-      # 移除冲突的 docker.io 并安装 Docker
-      - name: Remove existing Docker package
+      # 安装 Theos
+      - name: Install Theos
         run: |
-          sudo apt-get remove --purge docker.io
-          sudo apt-get autoremove -y
+          git clone --recursive https://github.com/theos/theos.git ~/theos
 
-      # 安装 Docker 使用官方方法
-      - name: Install Docker using official method
+      # 设置 Theos 环境变量
+      - name: Export THEOS path
         run: |
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sudo sh get-docker.sh
+          echo "THEOS=~/theos" >> $GITHUB_ENV
+          echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
 
-      # 验证 Docker 安装
-      - name: Verify Docker installation
+      # 清理旧构建缓存
+      - name: Clean previous build artifacts
         run: |
-          docker --version
+          rm -rf *.deb packages/ .theos/
 
-      # 拉取 Theos Docker 镜像并构建
-      - name: Build with Theos Docker
+      # 构建插件
+      - name: Build the tweak
         run: |
-          docker pull theos/theos  # 拉取 Theos 官方 Docker 镜像
-          docker run --rm -v $(pwd):/theos theos/theos make clean  # 清理旧构建
-          docker run --rm -v $(pwd):/theos theos/theos make package  # 构建插件
+          make clean
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide
 
-      # 打包 .deb 包为 ZIP
-      - name: Zip deb output
+      # 列出生成的 .deb 包
+      - name: List generated DEBs
         run: |
-          zip -r SHSHHelperOutput.zip *.deb
+          ls -lh packages/
 
-      # 创建 Release（如不存在）
+      # 创建 GitHub Release
       - name: Create GitHub Release
         run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.PAT }}" \
-            -H "Content-Type: application/json" \
-            -d '{"tag_name": "v1.0.0", "name": "v1.0.0", "body": "SHSHHelper tweak release"}' \
-            https://api.github.com/repos/${{ github.repository }}/releases || true
+          VERSION=$(date +v%Y%m%d%H%M)
+          gh release create $VERSION packages/*.deb --title "SHSHHelper $VERSION" --notes "自动构建 SHSHHelper .deb 安装包"
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
 
-      # 上传 .deb zip 到 Release
-      - name: Upload .deb to Release
-        run: |
-          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
-            https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.0.0 | jq -r .id)
-
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.PAT }}" \
-            -H "Content-Type: application/zip" \
-            --data-binary @SHSHHelperOutput.zip \
-            "https://uploads.github.com/repos/${{ github.repository }}/releases/${RELEASE_ID}/assets?name=SHSHHelperOutput.zip"
+      # 上传 .deb 到工作流 artifacts
+      - name: Upload DEB to workflow artifacts
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: SHSHHelper
+          path: packages/*.deb
