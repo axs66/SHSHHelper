@@ -37,6 +37,12 @@ jobs:
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
 
+      # 禁用 SDK 检查并设置 Linux 构建目标
+      - name: Set target to Linux and disable SDK check
+        run: |
+          echo "THEOS_TARGET=linux" >> $GITHUB_ENV
+          echo "export THEOS_TARGET=linux" >> ~/.bashrc
+
       # 清理旧构建缓存
       - name: Clean previous build artifacts
         run: |
