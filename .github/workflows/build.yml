@@ -34,45 +34,57 @@ jobs:
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
 
-      # 设置 Theos 环境变量（⚠️注意不能写 export）
-      - name: Set Theos environment
+      # 安装 iOS toolchain
+      - name: Install iOS Toolchain
         run: |
-          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
-          echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
+          mkdir -p ~/theos/toolchain
+          curl -LO https://github.com/theos/toolchain-linux/releases/download/latest/toolchain.tar.xz
+          tar -xf toolchain.tar.xz -C ~/theos/toolchain
 
-      # ✅ 调试：列出仓库根目录的文件，确认没有旧的 ccmodule.mk
-      - name: Check for leftover ccmodule.mk
+      # 安装 iOS SDK
+      - name: Install iOS SDK
         run: |
-          echo "查找是否有残留的 ccmodule.mk："
-          find . -name "ccmodule.mk" || true
+          mkdir -p ~/theos/sdks
+          curl -LO https://github.com/theos/sdks/releases/download/20240505/iPhoneOS16.4.sdk.tar.xz
+          tar -xf iPhoneOS16.4.sdk.tar.xz -C ~/theos/sdks
 
-      # ✅ 清理之前的构建缓存
+      # 设置 Theos 环境变量
+      - name: Export THEOS path
+        run: |
+          echo "THEOS=~/theos" >> $GITHUB_ENV
+          echo "THEOS_MAKE_PATH=~/theos/makefiles" >> $GITHUB_ENV
+
+      # 清理旧构建缓存
       - name: Clean previous build artifacts
         run: |
-          rm -rf .theos/ *.deb packages/ || true
+          rm -rf *.deb packages/ .theos/
 
-      # 编译插件
+      # 列出仓库文件，确认 Makefile 结构
+      - name: List repo files before build
+        run: |
+          find .
+
+      # 构建插件
       - name: Build the tweak
         run: |
           make clean
           make package
 
-      # 打包 .deb 为 ZIP
+      # 打包 .deb 为 zip
       - name: Zip deb output
         run: |
           zip -r SHSHHelperOutput.zip *.deb
 
-      # 创建 GitHub Release（固定 tag 为 v1.0.0）
-      - name: Create Release
-        id: create_release
+      # 创建 Release（如不存在）
+      - name: Create GitHub Release
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.PAT }}" \
             -H "Content-Type: application/json" \
             -d '{"tag_name": "v1.0.0", "name": "v1.0.0", "body": "SHSHHelper tweak release"}' \
-            https://api.github.com/repos/${{ github.repository }}/releases
+            https://api.github.com/repos/${{ github.repository }}/releases || true
 
-      # 上传 ZIP 到 Release
+      # 上传 .deb zip 到 Release
       - name: Upload .deb to Release
         run: |
           RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
