@@ -1,10 +1,7 @@
-name: Build SHSHHelper Tweak
+name: Build SHSHHelper Tweak (Manual Artifact Output)
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -13,34 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      # 手动 clone 仓库（替代 checkout@v2）
+      - name: Manually clone repo
+        run: |
+          git clone ${{ github.server_url }}/${{ github.repository }} .
+          git checkout ${{ github.ref_name }}
 
+      # 安装编译依赖
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential clang llvm ldid fakeroot dpkg-dev zip
 
+      # 设置 Theos
       - name: Setup Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
           echo "export THEOS=~/theos" >> $GITHUB_ENV
 
+      # 编译 tweak
       - name: Build the tweak
         run: |
           cd SHSHHelper
           make clean
           make package
 
-      - name: Rename .deb file for output
+      # 打包输出成 zip（你可以在 Action 的Artifacts面板中下载）
+      - name: Zip deb output
         run: |
           cd SHSHHelper/packages
-          for file in *.deb; do
-            cp "$file" "../../../SHSHHelper.deb"
-          done
-
-      - name: Upload .deb package
-        uses: actions/upload-artifact@v2
-        with:
-          name: SHSHHelper-deb
-          path: SHSHHelper.deb
+          zip -r ../../../SHSHHelperOutput.zip *.deb
