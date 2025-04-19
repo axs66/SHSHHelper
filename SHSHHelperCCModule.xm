@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <ControlCenterUIKit/ControlCenterUIKit.h>
-#import "Tweak.xm"  // 确保引入 Tweak.xm 来使用 getECID 函数
+#import "Tweak.xm" // 引入 Tweak.xm 确保 getECID 可用
 
 %hook CCUIControlCenterModule
 
@@ -8,7 +8,7 @@
     %orig;
     
     // 获取 ECID
-    NSString *ecid = [self getECID];  // 调用实例方法 getECID
+    NSString *ecid = [self getECID];
     
     // 如果 ECID 为空，显示错误消息
     if (ecid.length == 0) {
