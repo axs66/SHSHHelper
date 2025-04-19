@@ -18,7 +18,6 @@ HEADER_SEARCH_PATHS = $(THEOS)/include
 
 # 目标目标文件
 include $(THEOS_MAKE_PATH)/tweak.mk
-include $(THEOS_MAKE_PATH)/ccmodule.mk
 
 # 合并两个模块为一个 deb 包
 internal-stage::
