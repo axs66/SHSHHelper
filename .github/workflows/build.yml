@@ -8,6 +8,7 @@ on:
       - '.github/workflows/build.yml'
       - 'Tweak.xm'
       - 'control'
+      - 'Makefile'
 
 jobs:
   build:
