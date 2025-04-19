@@ -9,11 +9,18 @@
     // 获取 ECID
     NSString *ecid = [self getECID];
     
+    // 如果 ECID 为空，显示错误消息
+    if (ecid.length == 0) {
+        ecid = @"无法获取 ECID";
+    }
+    
     // 创建按钮
     UIButton *ecidButton = [UIButton buttonWithType:UIButtonTypeSystem];
     ecidButton.frame = CGRectMake(20, 20, 250, 40);
     [ecidButton setTitle:[NSString stringWithFormat:@"ECID: %@", ecid] forState:UIControlStateNormal];
     [ecidButton addTarget:self action:@selector(copyECID) forControlEvents:UIControlEventTouchUpInside];
+    [ecidButton setBackgroundColor:[UIColor lightGrayColor]];
+    [ecidButton.layer setCornerRadius:8.0];
     [self.view addSubview:ecidButton];
     
     // 创建跳转 TSS Saver 按钮
@@ -21,6 +28,8 @@
     saveButton.frame = CGRectMake(20, 70, 250, 40);
     [saveButton setTitle:@"保存 SHSH" forState:UIControlStateNormal];
     [saveButton addTarget:self action:@selector(openSHSHLink) forControlEvents:UIControlEventTouchUpInside];
+    [saveButton setBackgroundColor:[UIColor blueColor]];
+    [saveButton.layer setCornerRadius:8.0];
     [self.view addSubview:saveButton];
 }
 
@@ -34,6 +43,9 @@
 // 复制 ECID 到剪贴板
 - (void)copyECID {
     NSString *ecid = [self getECID];
+    if (ecid.length == 0) {
+        ecid = @"无法获取 ECID";
+    }
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = ecid;
 }
@@ -41,6 +53,9 @@
 // 打开 TSS Saver 链接
 - (void)openSHSHLink {
     NSString *ecid = [self getECID];
+    if (ecid.length == 0) {
+        ecid = @"无法获取 ECID";
+    }
     NSString *shshURL = [NSString stringWithFormat:@"https://tsssaver.inkyra.com/?ecid=%@", ecid];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:shshURL] options:@{} completionHandler:nil];
 }
