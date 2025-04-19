@@ -14,12 +14,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          submodules: recursive  # 如果你有 submodule，确保它也会被下载
+          submodules: recursive
+
+      # 更新包列表并修复依赖冲突
+      - name: Update package list and fix dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y --fix-broken
 
       # 安装 Docker
       - name: Install Docker
         run: |
-          sudo apt update
           sudo apt install -y docker.io
 
       # 拉取 Theos Docker 镜像并构建
