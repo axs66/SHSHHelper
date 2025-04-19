@@ -35,24 +35,21 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git ~/theos
           echo "export THEOS=~/theos" >> $GITHUB_ENV
 
-      # 确保进入到 SHSHHelper 目录
-      - name: Ensure we're in the SHSHHelper directory
+      # 确保在仓库根目录进行操作
+      - name: List repository contents
         run: |
-          cd SHSHHelper || exit 1
-          pwd  # 打印当前路径确认目录是否存在
+          ls -la  # 打印仓库根目录的所有文件和目录
 
       # 编译插件
       - name: Build the tweak
         run: |
-          cd SHSHHelper
           make clean
           make package
 
       # 打包 .deb 包为 ZIP
       - name: Zip deb output
         run: |
-          cd SHSHHelper/packages
-          zip -r ../../../SHSHHelperOutput.zip *.deb
+          zip -r SHSHHelperOutput.zip *.deb
 
       # 创建 GitHub Release
       - name: Create Release
