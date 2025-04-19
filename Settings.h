@@ -1,5 +1,9 @@
 // Settings.h
 #import <Foundation/Foundation.h>
 
-NSString *getECID(void);
-NSString *getDeviceModel(void);
+@interface Settings : NSObject
+
+- (NSString *)getECID;
+- (NSString *)getDeviceModel;
+
+@end
