@@ -1,9 +1,11 @@
-Package: com.netskao.wcabtestlocalbackup
-Name: WCABTestLocalBackup
+Package: com.axs.wcabtestlocalbackup
+Name: WCABTestLocalBackup微信自动备份聊天记录
 Version: 1.1-1
 Architecture: iphoneos-arm
 Depends: mobilesubstrate, firmware (>= 13.0)
 Description: WeChat Enables AB Tested Local Backup, Only 8.0.50+
 Author: Netskao
 Maintainer: Nets
-Section: Netskao-Tweaks
+Section: 微信插件
+Icon: https://axs66.github.io/repo/icon/wechat.png
+Sileodepiction: https://axs66.github.io/repo/sileodepiction/wcabtestlocalbackup/js.json
